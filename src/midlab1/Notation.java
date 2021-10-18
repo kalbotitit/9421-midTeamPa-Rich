@@ -1,5 +1,6 @@
 /*
     Algorithm:
+    infixToPostfix():
         1. Scan the infix notation
         2. If there is space in infix notation return error
         3. If current infix character is operand
@@ -20,6 +21,8 @@
 
 package midlab1;
 
+import java.util.InputMismatchException;
+
 public class Notation {
 
     private String notation;
@@ -33,13 +36,74 @@ public class Notation {
         notation = n;
     }
 
-    public String getNotation(){
-        return notation;
+    /**
+     * Return an integer according to the precedence of operators
+     * @param o operator
+     * @return an int
+     */
+    private int precedence(char o){
+        if (o == '+' || o == '-') return 1;
+        else if (o == '*' || o == '/') return 2;
+        else if (o == '^') return 3;
+        else return -1;
     }
 
-    public void setNotation(String notation) {
-        this.notation = notation;
+    /**
+     * Check if the input has no space
+     */
+    private void noSpace(){
+        for (int c = 0; c < notation.length(); c++){
+            if (notation.charAt(c) == ' ') throw new InputMismatchException();
+        }
     }
 
+    /**
+     * Convert the infix notation to postfix notation
+     * @return a string of postfix notation
+     */
+    public String infixToPostfix(String notation){
+        String postfix = "";
+        MyStack<Character> stack = new MyStack<>();
+        noSpace();
+
+        for (int c = 0; c < notation.length(); c++){
+            char currChar = notation.charAt(c);
+
+            if (Character.isLetterOrDigit(currChar))
+                postfix += currChar; // the current character is operand; append it to the postfix string
+
+            // current character is equal to opening parenthesis
+            else if (currChar == '(') {
+                stack.push(currChar);
+                postfix += " "; // for readability purpose
+            }
+
+            // current character is equal to closing parenthesis
+            else if (currChar == ')'){
+                while (!stack.isEmpty() && stack.top() != '(') {
+                    postfix += stack.pop();
+                    postfix += " "; // for readability purpose
+                }
+
+                stack.pop(); // pop the opening parenthesis in stack
+            }
+
+            else{// operator is the current character
+                // operator has less precedence than the operator in top of the stack
+                while (!stack.isEmpty() && precedence(currChar) <= precedence(stack.top()))
+                    postfix += stack.pop();
+                // the precedence of current character is greater than the top operator in the stack
+                // push it to the stack
+                stack.push(currChar);
+            }
+
+        } // end of for loop
+
+        // append and pop the remaining operator in the stack
+        while (!stack.isEmpty())
+            postfix += stack.pop();
+
+        return postfix;
+    }// end of infixToPostfix method
 
 }

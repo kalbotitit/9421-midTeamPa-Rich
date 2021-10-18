@@ -19,21 +19,25 @@
  */
 package midlab1;
 
+import java.util.InputMismatchException;
+
 public class Main {
 
     public static void main(String[] args) {
+        Notation n = new Notation();
+        try {
+            System.out.println("before");
 
+            String nt = n.infixToPostfix("A+B*(C^D)");
+            System.out.println(nt);
+            System.out.println("after");
+        }catch (InputMismatchException x){
+            System.out.println("Input has space");
+        }
+
+
+        System.exit(0);
     }
 
-    private int precedence(char c){
-        return switch (c) {
-            case '+', '-' -> 1;
-            case '*', '/' -> 2;
-            case '^' -> 3;
-            default -> -1;
-        };
-    }
-
-
-
+    
 }
