@@ -61,13 +61,14 @@ public class Notation {
      * Convert the infix notation to postfix notation
      * @return a string of postfix notation
      */
-    public String infixToPostfix(String notation){
+    public String infixToPostfix(String n){
+        notation = n;
         String postfix = "";
         MyStack<Character> stack = new MyStack<>();
         noSpace();
 
-        for (int c = 0; c < notation.length(); c++){
-            char currChar = notation.charAt(c);
+        for (int c = 0; c < n.length(); c++){
+            char currChar = n.charAt(c);
 
             if (Character.isLetterOrDigit(currChar))
                 postfix += currChar; // the current character is operand; append it to the postfix string
