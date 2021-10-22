@@ -26,18 +26,18 @@ public class Main {
     public static void main(String[] args) {
         Notation n = new Notation();
         try {
-            System.out.println("before");
-
+            System.out.println("before: A+B*(C^D)");
             String nt = n.infixToPostfix("A+B*(C^D)");
-            System.out.println(nt);
-            System.out.println("after");
+            System.out.println("after: " + nt);
         }catch (InputMismatchException x){
             System.out.println("Input has space");
         }
 
-
-        System.exit(0);
+        Notation nn = new Notation("5 3 + 8 2 - *");
+        System.out.println("\nPostfix Expression: " + nn.getNotation());
+        System.out.printf("%-10s %-10s %-10s %-10s %-10s\n", "Symbol", "Operand 1", "Operand 2", "Value", "Operand Stack");
+        nn.evaluate();
     }
 
-    
+
 }

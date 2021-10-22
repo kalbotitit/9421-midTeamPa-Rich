@@ -71,7 +71,18 @@ public class MyStack<E> implements Stack<E>{
             head = head.getNext();
         }
     }
+    public String toString() {
+        Node<E> current = head;
+        if (isEmpty()) {
+            System.out.println("Stack is empty");
+        }
+        while (current != null) {
+            System.out.print(current.getElement() + " ");
+            current = current.getNext();
+        }
 
+        return String.valueOf(current);
+    }
     private static class Node<E>{
 
         private E element;

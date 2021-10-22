@@ -21,7 +21,9 @@
 
 package midlab1;
 
+import java.util.Arrays;
 import java.util.InputMismatchException;
+import java.util.List;
 
 public class Notation {
 
@@ -106,5 +108,84 @@ public class Notation {
 
         return postfix;
     }// end of infixToPostfix method
+    public void evaluate() {    // evaluate method
+        String pfExpression = notation;
+        List<String> elements = Arrays.asList(pfExpression.split("\\s+"));
+        MyStack<Integer> resultStack = new MyStack<>();
 
+        elements.stream().forEach((string) -> { // forEach method
+            Integer op1 = null, op2 = null, val = null; // variable declaration
+            try {
+                resultStack.push(Integer.valueOf(string)); // invokes the push method from the MyStack class
+                //otherwise, if element is not numerical, switch to the corresponding operator
+            } catch (NumberFormatException e) { // catches the number format exception error
+                op1 = resultStack.pop(); // invokes the pop method from the MyStack class
+                op2 = resultStack.pop(); // invokes the pop method from the MyStack class
+                val = 0;    // set the value of val to 0
+                evaluateOperator(string,val, op1, op2, resultStack);
+            }
+            printPostfixRow(string, op2, op1, val, printStack(resultStack));    // invokes printPostfixRow method
+        }); // end of forEach
+        printPostfixExpression(pfExpression, resultStack); // invoke printPostfixExpression method
+    }   // end of evaluate method
+    public void evaluateOperator(String string, Integer val, Integer op1, Integer op2, MyStack resultStack){    // evaluateOperator method
+        switch (string) {   // switch-case statement
+            //evaluate based on operator
+            case "+":
+                val = op2 + op1;
+                resultStack.push(val);
+                break;
+            case "-":
+                val = op2 - op1;
+                resultStack.push(val);
+                break;
+            case "*":
+                val = op2 * op1;
+                resultStack.push(val);
+                break;
+            case "/":
+                val = op2 / op1;
+                resultStack.push(val);
+                break;
+            case "^":
+                val = (int) Math.pow(op2, op1);
+                resultStack.push(val);
+                break;
+        } // end of switch-case statement
+    }   // end of evaluateOperator method
+    public void printPostfixRow(String string, Integer op2, Integer op1, Integer val, String resultStack) { // printPostfixRow method
+        if (op1 == null && op2 == null && val == null) {
+            System.out.printf("%-10s %-10s %-10s %-10s %-10s\n", string, "", "", "", resultStack);
+        } else {
+            System.out.printf("%-10s %-10s %-10s %-10s %-10s\n", string, op2, op1, val, resultStack);
+        } // return
+    }   // end of printPostfixRow method
+    public void printPostfixExpression(String pfExpression, MyStack resultStack){  // printPostfixExpression method
+        System.out.print("\nThe postfixExpression " + pfExpression + " is equal to ");
+        resultStack.toString();
+        // return
+    }   // end of printPostfixExpression method
+    public String printStack(MyStack<Integer> resultStack) {    // printStack method
+        MyStack<Integer> printStack = new MyStack<>();  // variable declaration
+        String print = "";  // variable declaration
+        if (resultStack.isEmpty()) {    // if statement
+            return null;
+        }   // end of if statement
+        while (resultStack.size() > 0) {    // while statement
+            printStack.push(resultStack.pop());
+        } // end of while statement
+        while (printStack.size() > 0) { // while statement
+            Integer element = printStack.pop();
+            if (printStack.isEmpty()) { // if statement
+                print += element;
+            }   // end of if statement
+            if (!printStack.isEmpty()) {    // if statement
+                print += element + ",";
+            }   // end of if statement
+            resultStack.push(element);
+        }   // end of while statement
+        return print;
+    }   // end of printStack method
+    public String getNotation(){return notation;}
+    public void setNotation(String notation){this.notation = notation;}
 }
