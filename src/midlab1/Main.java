@@ -20,6 +20,7 @@
 package midlab1;
 
 import java.util.InputMismatchException;
+import java.util.Scanner;
 
 public class Main {
 
@@ -39,5 +40,33 @@ public class Main {
         nn.evaluate();
     }
 
+    public static void showMenu(){
+        System.out.println("\n\n +----------------- Menu -----------------------+");
+        System.out.println(" |                                              |");
+        System.out.println(" |   1. Infix                                   |");
+        System.out.println(" |   2. Postfix                                 |");
+        System.out.println(" |   3. Quit the program                        |");
+        System.out.println(" +----------------------------------------------+");
+    }
 
+    public int isValidChoice( int min, int max){
+        Scanner keyboard = new Scanner(System.in);
+        int choice = 0;
+        boolean valid;
+        do{
+            try{
+                System.out.print("Enter choice: ");
+                choice = Integer.parseInt(keyboard.nextLine());
+                valid = false;
+                if (choice >= min && choice <= max) {
+                    valid = true;
+                }
+
+            }catch(NumberFormatException exception){
+                System.out.print("Please enter an integer.");
+                valid = true;
+            }
+            }while (valid);
+        return choice;
+    }
 }
