@@ -81,8 +81,8 @@ public class Main {
     public static void showMenu(){
         System.out.println("\n +----------------- Menu -----------------------+");
         System.out.println(" |                                              |");
-        System.out.println(" |   1. Infix                                   |");
-        System.out.println(" |   2. Postfix                                 |");
+        System.out.println(" |   1. Infix to Postfix                        |");
+        System.out.println(" |   2. Postfix Calculator                      |");
         System.out.println(" |   3. Quit the program                        |");
         System.out.println(" +----------------------------------------------+");
     }
