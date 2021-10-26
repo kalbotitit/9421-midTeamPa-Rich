@@ -24,6 +24,8 @@ package midlab1;
 import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Notation {
 
@@ -49,7 +51,11 @@ public class Notation {
         else if (o == '^') return 3;
         else return -1;
     }
-
+    private void hasSpace(){
+        for (int c = 1; c < notation.length(); c = c + 2){
+            if (notation.charAt(c) != ' ') throw new InputMismatchException();
+        }
+    }
     /**
      * Check if the input has no space
      */
@@ -108,25 +114,31 @@ public class Notation {
 
         return postfix;
     }// end of infixToPostfix method
-    public void evaluate() {    // evaluate method
+    public String evaluate(MyStack<Integer> resultStack) {    // evaluate method
         String pfExpression = notation;
+        hasSpace();
         List<String> elements = Arrays.asList(pfExpression.split("\\s+"));
-        MyStack<Integer> resultStack = new MyStack<>();
-
+        AtomicInteger count = new AtomicInteger(1);
+        AtomicReference<String> output = new AtomicReference<>("");
+        String finaL = "";
         elements.stream().forEach((string) -> { // forEach method
             Integer op1 = null, op2 = null, val = null; // variable declaration
+
             try {
-                resultStack.push(Integer.valueOf(string)); // invokes the push method from the MyStack class
+                resultStack.push(Integer.valueOf(string)); // invokes the push method from the LinkedStack class
                 //otherwise, if element is not numerical, switch to the corresponding operator
             } catch (NumberFormatException e) { // catches the number format exception error
-                op1 = resultStack.pop(); // invokes the pop method from the MyStack class
-                op2 = resultStack.pop(); // invokes the pop method from the MyStack class
+                op1 = resultStack.pop(); // invokes the pop method from the LinkedStack class
+                op2 = resultStack.pop(); // invokes the pop method from the LinkedStack class
                 val = 0;    // set the value of val to 0
                 evaluateOperator(string,val, op1, op2, resultStack);
             }
-            printPostfixRow(string, op2, op1, val, printStack(resultStack));    // invokes printPostfixRow method
+
+            output.set(output + printPostfixRow(count.get(), string, op2, op1, val, printStack(resultStack)));    // invokes printPostfixRow method
+            count.getAndIncrement();
+
         }); // end of forEach
-        printPostfixExpression(pfExpression, resultStack); // invoke printPostfixExpression method
+        return output + printPostfixExpression(pfExpression, resultStack); // invoke printPostfixExpression method
     }   // end of evaluate method
     public void evaluateOperator(String string, Integer val, Integer op1, Integer op2, MyStack resultStack){    // evaluateOperator method
         switch (string) {   // switch-case statement
@@ -153,17 +165,23 @@ public class Notation {
                 break;
         } // end of switch-case statement
     }   // end of evaluateOperator method
-    public void printPostfixRow(String string, Integer op2, Integer op1, Integer val, String resultStack) { // printPostfixRow method
+    public String printPostfixRow(int count, String string, Integer op2, Integer op1, Integer val, String resultStack) { // printPostfixRow method
+        String a = "";
+        String b = "";
+        if(count == 1){
+            a = String.format("%-10s %-10s %-10s %-10s %-10s\n", "Symbol", "operand1", "operand2", "value", "operandStack");
+        }
         if (op1 == null && op2 == null && val == null) {
-            System.out.printf("%-10s %-10s %-10s %-10s %-10s\n", string, "", "", "", resultStack);
+            b = b + String.format("%-10s %-10s %-10s %-10s %-10s\n", string, "", "", "", resultStack);
         } else {
-            System.out.printf("%-10s %-10s %-10s %-10s %-10s\n", string, op2, op1, val, resultStack);
+            b = b + String.format("%-10s %-10s %-10s %-10s %-10s\n", string, op2, op1, val, resultStack);
         } // return
+        return a + b;
     }   // end of printPostfixRow method
-    public void printPostfixExpression(String pfExpression, MyStack resultStack){  // printPostfixExpression method
-        System.out.print("\nThe postfixExpression " + pfExpression + " is equal to ");
-        resultStack.toString();
+    public String printPostfixExpression(String pfExpression, MyStack resultStack){  // printPostfixExpression method
+        String postF = "\nThe postfixExpression " + pfExpression + " is equal to ";
         // return
+        return postF;
     }   // end of printPostfixExpression method
     public String printStack(MyStack<Integer> resultStack) {    // printStack method
         MyStack<Integer> printStack = new MyStack<>();  // variable declaration

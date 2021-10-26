@@ -27,8 +27,9 @@ public class MyStack<E> implements Stack<E>{
      * @return top element
      */
     @Override
-    public E pop() {
-        if (isEmpty()) return null;
+    public E pop() throws StackException{
+        if (isEmpty())
+            throw new StackException("Stack Underflow!");
         E p = head.getElement();
         head = head.getNext();
         size--;
@@ -74,14 +75,10 @@ public class MyStack<E> implements Stack<E>{
     public String toString() {
         Node<E> current = head;
         if (isEmpty()) {
-            System.out.println("Stack is empty");
+            System.out.println("Stack is empty!");
         }
-        while (current != null) {
-            System.out.print(current.getElement() + " ");
-            current = current.getNext();
-        }
-
-        return String.valueOf(current);
+            System.out.print(current.getElement());
+            return null;
     }
     private static class Node<E>{
 

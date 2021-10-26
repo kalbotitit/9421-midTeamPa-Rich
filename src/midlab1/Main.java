@@ -25,23 +25,61 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
+        Scanner scan = new Scanner(System.in);
+        MyStack<Integer> resultStack = new MyStack<>();
+        boolean invalid = false;
         Notation n = new Notation();
-        try {
-            System.out.println("before: A+B*(C^D)");
-            String nt = n.infixToPostfix("A+B*(C^D)");
-            System.out.println("after: " + nt);
-        }catch (InputMismatchException x){
-            System.out.println("Input has space");
+        int min = 0;
+        int max = 4;
+        int choice = 0;
+        String nt = "";
+        String output = "";
+        while(choice != 3) {
+        showMenu();
+        choice = isValidChoice(min, max);
+            switch (choice) {
+                case 1:
+                    do {
+                        try {
+                            System.out.print("Enter infix expression (Make sure to enter with spaces\ne.g. 2+3*4): ");
+                            nt = scan.nextLine();
+                            invalid = false;
+                            output = n.infixToPostfix(nt);
+                        } catch (InputMismatchException x) {
+                            invalid = true;
+                            System.out.println("Input has space");
+                        }
+                    } while (invalid);
+                    System.out.println("Before: " + nt);
+                    System.out.print("After: " + output);
+                    break;
+                case 2:
+                    do {
+                        try {
+                            System.out.print("Enter postfix expression (Make sure to enter with spaces\ne.g. 2 3 4 * +): ");
+                            nt = scan.nextLine();
+                            invalid = false;
+                            n = new Notation(nt);
+                            output = n.evaluate(resultStack);
+                        } catch (StackException x) {
+                            invalid = true;
+                            System.out.println("Invalid Expression!");
+                        } catch (InputMismatchException i) {
+                            invalid = true;
+                            System.out.println("Input has no space");
+                        }
+                    } while (invalid);
+                    System.out.print(output + " ");
+                    resultStack.toString();
+                    break;
+                case 3:
+                    System.exit(0);
+                    break;
+            }
         }
-
-        Notation nn = new Notation("5 3 + 8 2 - *");
-        System.out.println("\nPostfix Expression: " + nn.getNotation());
-        System.out.printf("%-10s %-10s %-10s %-10s %-10s\n", "Symbol", "Operand 1", "Operand 2", "Value", "Operand Stack");
-        nn.evaluate();
     }
-
     public static void showMenu(){
-        System.out.println("\n\n +----------------- Menu -----------------------+");
+        System.out.println("\n +----------------- Menu -----------------------+");
         System.out.println(" |                                              |");
         System.out.println(" |   1. Infix                                   |");
         System.out.println(" |   2. Postfix                                 |");
@@ -49,7 +87,7 @@ public class Main {
         System.out.println(" +----------------------------------------------+");
     }
 
-    public int isValidChoice( int min, int max){
+    public static int isValidChoice(int min, int max){
         Scanner keyboard = new Scanner(System.in);
         int choice = 0;
         boolean valid;
@@ -58,7 +96,7 @@ public class Main {
                 System.out.print("Enter choice: ");
                 choice = Integer.parseInt(keyboard.nextLine());
                 valid = false;
-                if (choice >= min && choice <= max) {
+                if (choice <= min && choice >= max) {
                     valid = true;
                 }
 
