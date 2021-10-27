@@ -47,7 +47,7 @@ public class Main {
                             output = n.infixToPostfix(nt);
                         } catch (InputMismatchException x) {
                             invalid = true;
-                            System.out.println("Input has space");
+                            System.out.println("Input has space!");
                         }
                     } while (invalid);
                     System.out.println("Before: " + nt);
@@ -66,7 +66,7 @@ public class Main {
                             System.out.println("Invalid Expression!");
                         } catch (InputMismatchException i) {
                             invalid = true;
-                            System.out.println("Input has no space");
+                            System.out.println("Input has no space!");
                         }
                     } while (invalid);
                     System.out.print(output + " ");
