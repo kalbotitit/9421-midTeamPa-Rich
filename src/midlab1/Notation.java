@@ -79,7 +79,7 @@ public class Notation {
             char currChar = n.charAt(c);
 
             if (Character.isLetterOrDigit(currChar))
-                postfix += currChar; // the current character is operand; append it to the postfix string
+                postfix += currChar + ' '; // the current character is operand; append it to the postfix string
 
             // current character is equal to opening parenthesis
             else if (currChar == '(') {
@@ -100,7 +100,7 @@ public class Notation {
             else{// operator is the current character
                 // operator has less precedence than the operator in top of the stack
                 while (!stack.isEmpty() && precedence(currChar) <= precedence(stack.top()))
-                    postfix += stack.pop();
+                    postfix += stack.pop() + ' ';
                 // the precedence of current character is greater than the top operator in the stack
                 // push it to the stack
                 stack.push(currChar);
@@ -110,7 +110,7 @@ public class Notation {
 
         // append and pop the remaining operator in the stack
         while (!stack.isEmpty())
-            postfix += stack.pop();
+            postfix += stack.pop() + ' ';
 
         return postfix;
     }// end of infixToPostfix method
