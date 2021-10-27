@@ -56,7 +56,7 @@ public class Main {
                 case 2:
                     do {
                         try {
-                            System.out.print("Enter postfix expression (Make sure to enter without spaces\ne.g. 2 3 4 * +): ");
+                            System.out.print("Enter postfix expression (Make sure to enter with spaces\ne.g. 2 3 4 * +): ");
                             nt = scan.nextLine();
                             invalid = false;
                             n = new Notation(nt);
