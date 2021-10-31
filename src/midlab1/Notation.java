@@ -21,6 +21,7 @@
 
 package midlab1;
 
+
 import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.List;
@@ -30,6 +31,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class Notation {
 
     private String notation;
+    String operands = "";
 
     /** Default constructor */
     Notation(){
@@ -71,17 +73,22 @@ public class Notation {
      */
     public String infixToPostfix(String n){
         notation = n;
+        String stackz = "";
         String postfix = "";
         MyStack<Character> stack = new MyStack<>();
         noSpace();
 
+        System.out.printf("%-15s %-15s %-15s %n", "SYMBOL", "STACK", "POSTFIX");
+        System.out.println("==========================================");
+
         for (int c = 0; c < n.length(); c++){
             char currChar = n.charAt(c);
+
 
             if (Character.isLetterOrDigit(currChar))
                 postfix += currChar + " "; // the current character is operand; append it to the postfix string
 
-            // current character is equal to opening parenthesis
+                // current character is equal to opening parenthesis
             else if (currChar == '(') {
                 stack.push(currChar);
                 postfix += " "; // for readability purpose
@@ -106,11 +113,30 @@ public class Notation {
                 stack.push(currChar);
             }
 
+
+
+        // Displays The Conversion Table
+            if (!Character.isLetterOrDigit(currChar))
+                operands = operands + currChar;
+            System.out.printf("%-15s %-15s %-15s %n", currChar, operands, postfix);
+
+
+
         } // end of for loop
+
+
 
         // append and pop the remaining operator in the stack
         while (!stack.isEmpty())
             postfix += stack.pop() + " ";
+
+
+        System.out.printf("%-15s %-15s %-15s %n", "", "", postfix);
+        System.out.println("==========================================\n" );
+
+
+
+
 
         return postfix;
     }// end of infixToPostfix method
