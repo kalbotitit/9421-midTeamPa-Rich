@@ -29,31 +29,33 @@ import java.util.Scanner;
 
 public class Main {
 
-    //HuffmanCode text;
-    private static String str;
+    private static HuffmanCodeTree text;
+    private static String str = null;
 
     public static void main(String[] args) {
         run();
     }
 
     static void run(){
-        str = text("Please enter series of characters or paragraph as basis for creating Huffman Code");
+        str = input("Please enter series of characters or paragraph as basis for creating Huffman Code");
         //
-        //text.getBaseText(str); or text = new HuffmanCode(str);
+        text.getBaseText(str);
         do {
             int choice = getChoice();
             switch (choice) {
                 case 1 -> {
-                    str = text("Please enter series of characters or paragraph as basis for creating Huffman Code");
-                    //text.getBaseText(str);
+                    str = input("Please enter series of characters or paragraph as basis for creating Huffman Code");
+//                    text.getBaseText(str);
+//                    System.out.println(text.encode());
+//                    printCode();
                 }
                 case 2 -> {
-                    str = text("Make sure that the text you enter is in the base text you enter.");
-                    //text.convertToHuffmanCode(str);
+                    str = input("Make sure that the text you enter is in the base text you enter.");
+
                 }
                 case 3 -> {
-                    str = text("Make sure that the code you enter is in the converted code generated");
-                    //text.huffmanCodeToText(str);
+                    str = input("Make sure that the code you enter is in the converted code generated");
+//                    text.decode(str);
                 }
                 default -> System.exit(0);
             }
@@ -61,7 +63,7 @@ public class Main {
 
     }
 
-    static String text(String msg){
+    static String input(String msg){
         Scanner kbd = new Scanner(System.in);
         String base;
         System.out.println(msg);
@@ -98,6 +100,11 @@ public class Main {
                 System.out.println("Enter integer from 1 to 4 only");
             }
         }while (true);
+    }
+
+    static void printCode(){
+        text.getHuffmanCodes().forEach((chr, code) ->
+                System.out.println(chr + " " + code));
     }
 
 }
