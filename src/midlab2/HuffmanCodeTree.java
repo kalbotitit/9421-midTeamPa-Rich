@@ -1,84 +1,180 @@
 package midlab2;
 
-import java.util.HashMap;
-import java.util.InputMismatchException;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.*;
 
+/**
+ * Class for creating Huffman Code using tree data structure
+ * Hash map was used for storing and retrieving character frequency and huffman codes
+ */
 public class HuffmanCodeTree {
 
-    private InternalNode root;
-    private String input;
-    // Hash Map is used for faster retrieval of values
-    // store the freq of a character in the input
-    private HashMap<Character, Integer> charFreq = new HashMap<>();
-    // store the generated huffman code from the huffman code tree
-    private HashMap<Character, String> huffmanCodes = new HashMap<>();
+    private HuffmanNode root;
+    private String text;
+    private Map<Character, Integer> charFreqs;
+    private Map<Character, String> huffmanCodes = new HashMap<>();
+    private PriorityQueue<HuffmanNode> nodeQueue;
 
     /**
      * Constructor
+     * @param text base text for creating huffman code
      */
-    public HuffmanCodeTree(){}
-
-    public void getBaseText(String input){
-        this.input = input;
-
-        // fill the hash map of the frequency of every character
-        charFreqMap();
+    HuffmanCodeTree(String text){
+        this.text = text;
+        // Generate the Huffman code Tree
+        genHuffmanTree();
     }
 
-    private void charFreqMap(){
-        for (int c = 0; c < input.length(); c++){
-            Integer frequency = charFreq.get(input.charAt(c));
+    /**
+     * Create the Huffman Coding tree
+     */
+    private void genHuffmanTree(){
+        countCharFreq();
 
-            // check if the character is new it assigns 1
-            // else add 1 to current frequency of the character
-            frequency = frequency == null ? 1 : frequency + 1;
+        // Instantiate priority queue to store the leaf nodes of Huffman tree
+        // The leaf node with lowest frequency is the priority
+        nodeQueue = new PriorityQueue<>(
+                (l, r) -> l.getFreq() - r.getFreq());
+        // Add the leaf node to the priority queue
+        for (Map.Entry<Character, Integer> entry : charFreqs.entrySet()) {
+            nodeQueue.add(new HuffmanNode(entry.getKey(), entry.getValue()));
+        }
+        // Create the internal nodes of the huffman tree
+        while (nodeQueue.size() > 1){
+            // Removes two nodes with lowest frequency in priority queue
+            HuffmanNode left = nodeQueue.poll();
+            HuffmanNode right = nodeQueue.poll();
 
-            charFreq.put(input.charAt(c), frequency);
+            // Internal nodes
+            int sum = left.getFreq() + right.getFreq();
+            nodeQueue.add(new HuffmanNode('\0', sum, left, right));
+        }
+
+        // Points to the root of the Huffman Code tree
+        root = nodeQueue.peek();
+        // Generate the huffman code for every character
+        genHuffmanCode(root, "");
+
+    }
+
+    /**
+     * Counts the frequency of every character in the base text
+     */
+    private void countCharFreq(){
+        charFreqs = new HashMap<>();
+        for (char c : text.toCharArray()) {
+            // check if the character is new
+            if (!charFreqs.containsKey(c))
+                charFreqs.put(c, 0);
+            // When the character already added
+            // the frequency of the character increases by 1
+            charFreqs.put(c, charFreqs.get(c) + 1);
         }
     }
 
-    public String cnvrtTextToHuffmanCode(String text){
-        String result = "";
-        for (char c : text.toCharArray()){
-            if (huffmanCodes.get(c) == null)
-                throw new InputMismatchException("wala sa base text");
-            result += huffmanCodes.get(c);
-
+    /**
+     * Convert the Huffman code to corresponding character
+     * @param code huffman code
+     * @return string equivalent of code
+     * @throws HasSpaceException when the input code has space included
+     */
+    public String cnvrtCodeToTxt(String code) throws HasSpaceException {
+        StringBuilder codeToTxt = new StringBuilder();
+        hasSpace(code);
+        HuffmanNode curr = root;
+        // traverse sequentially through the input code
+        // then generate the corresponding text of code input
+        for (char chr : code.toCharArray()){
+            curr = chr == '0' ? curr.getLeft() : curr.getRight();
+            if (curr.getLeft() == null && curr.getRight() == null) {
+                codeToTxt.append(curr.getCh());
+                curr = root;
+            }
         }
-        return result;
+        return codeToTxt.toString();
     }
 
-    public String encodeHuffmanCode(){
-        PriorityQueue<InternalNode> q = new PriorityQueue<>();
-        charFreq.forEach((chr, freq) ->
-                q.add(new LeafNode(chr, freq))
-        );
-
-        while (q.size() > 1)
-            q.add(new InternalNode(q.poll(), q.poll()));
-
-        genHuffmanCode(root = q.poll(), "");
-
-        return printCode();
+    /**
+     * Check if the input code has space included
+     * @param code huffman code
+     * @throws HasSpaceException when input has space
+     */
+    private void hasSpace(String code) throws HasSpaceException {
+        // Sequentially check the string for space
+        for (char chr : code.toCharArray())
+            if (chr == ' ')
+                throw new HasSpaceException("Input has space");
     }
 
-    private void genHuffmanCode(InternalNode n, String code){
-        if (n instanceof LeafNode){
-            huffmanCodes.put(((LeafNode) n).getCharacter(), code);
-            return;
+    /**
+     * Convert string text to correspoding huffman code
+     * @param text string input
+     * @return huffman code of text
+     */
+    public String cnvrtTxtToHuffmanCode(String text){
+        StringBuilder codeToTxt = new StringBuilder();
+        // Traverse sequentially the input text
+        // then generate the corresponding huffman code for text
+        for (char chr : text.toCharArray()) {
+            if (huffmanCodes.get(chr) == null)
+                throw new InputMismatchException();
+            codeToTxt.append(huffmanCodes.get(chr));
         }
-        genHuffmanCode(n.getLeft(), code.concat("0"));
-        genHuffmanCode(n.getRight(), code.concat("1"));
+
+        return codeToTxt.toString();
     }
 
-    private String printCode(){
-        String str = "";
-        for (char chr : input.toCharArray())
-            str += huffmanCodes.get(chr);
+    /**
+     * Generate the huffman code for every character in base text
+     * Hash Map holds the codes for faster retrieval of codes
+     * @param curr current root
+     * @param str '0' for left node and '1' for right node
+     */
+    private void genHuffmanCode(HuffmanNode curr , String str){
+        if (curr == null) return;
 
-        return str;
+        // leaf node is encountered
+        if (curr.getLeft() == null && curr.getRight() == null) huffmanCodes.put(curr.getCh(), str);
+
+        // to generate the huffman code
+        // assign 0 to left node and 1 to right node
+        genHuffmanCode(curr.getLeft(), str.concat("0"));
+        genHuffmanCode(curr.getRight(), str.concat("1"));
+    }
+
+    /**
+     * Print the Huffman Code Table
+     * It includes the characters, huffman code, number of bits and frequency
+     */
+    public void printHuffmanCodeTable(){
+        System.out.println("Text: ");
+        System.out.println(text);
+        // create a table that print the characters, huffman code
+        // number of bits and frequency
+        System.out.printf("%-15s%-15s%-20s%-15s\n", "Character", "Huffman Code", "Number of Bits", "Frequency");
+        for (Map.Entry<Character, String> entry : huffmanCodes.entrySet()) {
+            System.out.printf("%-15s%-15s%-20s%-15s\n", entry.getKey(), entry.getValue(), entry.getValue().length(), charFreqs.get(entry.getKey()));
+        }
+        String gen = cnvrtTxtToHuffmanCode(text);
+        System.out.println("Huffman Code equivalent of base text: " + gen );
+    }
+
+    /**
+     * Print the percentage of storage savings
+     */
+    public void printPercentageSave(){
+        // calculate the number of bits on the original text
+        int numOrigBits = text.length() * 7;
+        // calculate the number of bits on the compressed text
+        int totalCompressedBits = 0;
+        for (Map.Entry<Character, String> entry : huffmanCodes.entrySet()) {
+            totalCompressedBits += (charFreqs.get(entry.getKey()) * entry.getValue().length());
+        }
+        // calculate for the percentage of storage savings
+        double percentage = (double) (numOrigBits - totalCompressedBits) / numOrigBits * 100;
+        //print the result
+        System.out.println("Uncompressed size of text: " + numOrigBits);
+        System.out.println("Compressed size of text: " + totalCompressedBits);
+        System.out.printf("Percentage of storage saving: %.2f%c\n", percentage, '%');
     }
 
 }
