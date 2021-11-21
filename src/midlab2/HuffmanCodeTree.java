@@ -1,100 +1,84 @@
 package midlab2;
 
 import java.util.HashMap;
-import java.util.Map;
+import java.util.InputMismatchException;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
 public class HuffmanCodeTree {
 
-    private Node root;
-    private String text;
-    private Map<Character, Integer> charFreq;
-    private Map<Character, String> huffmanCodes;
+    private InternalNode root;
+    private String input;
+    // Hash Map is used for faster retrieval of values
+    // store the freq of a character in the input
+    private HashMap<Character, Integer> charFreq = new HashMap<>();
+    // store the generated huffman code from the huffman code tree
+    private HashMap<Character, String> huffmanCodes = new HashMap<>();
 
+    /**
+     * Constructor
+     */
     public HuffmanCodeTree(){}
 
-    public HuffmanCodeTree(String t){
-        text = t;
-        fillCharFreqMap();
-        huffmanCodes = new HashMap<>();
+    public void getBaseText(String input){
+        this.input = input;
+
+        // fill the hash map of the frequency of every character
+        charFreqMap();
     }
 
-    public void getBaseText(String t){
-        text = t;
-        fillCharFreqMap();
-        huffmanCodes = new HashMap<>();
-    }
+    private void charFreqMap(){
+        for (int c = 0; c < input.length(); c++){
+            Integer frequency = charFreq.get(input.charAt(c));
 
-    public void fillCharFreqMap(){
-        charFreq = new HashMap<>();
-        for (char chr : text.toCharArray()){
-            Integer freq = charFreq.get(chr);
-            charFreq.put(chr, freq != null ? freq + 1 : 1);
+            // check if the character is new it assigns 1
+            // else add 1 to current frequency of the character
+            frequency = frequency == null ? 1 : frequency + 1;
+
+            charFreq.put(input.charAt(c), frequency);
         }
     }
 
-    public String encode(){
-        Queue<Node> queue = new PriorityQueue<>();
-        charFreq.forEach((chr, freq) ->
-                queue.add(new LeafNode(freq, chr)));
+    public String cnvrtTextToHuffmanCode(String text){
+        String result = "";
+        for (char c : text.toCharArray()){
+            if (huffmanCodes.get(c) == null)
+                throw new InputMismatchException("wala sa base text");
+            result += huffmanCodes.get(c);
 
-        while (queue.size() > 1)
-            queue.add( new Node(queue.poll(), queue.poll()));
-
-        genHuffmanCode(root = queue.poll(), "");
-        return getEncodedText();
+        }
+        return result;
     }
 
-    private void genHuffmanCode(Node node, String code){
-        if (node instanceof LeafNode){
-            huffmanCodes.put(((LeafNode) node).getElement(), code);
+    public String encodeHuffmanCode(){
+        PriorityQueue<InternalNode> q = new PriorityQueue<>();
+        charFreq.forEach((chr, freq) ->
+                q.add(new LeafNode(chr, freq))
+        );
+
+        while (q.size() > 1)
+            q.add(new InternalNode(q.poll(), q.poll()));
+
+        genHuffmanCode(root = q.poll(), "");
+
+        return printCode();
+    }
+
+    private void genHuffmanCode(InternalNode n, String code){
+        if (n instanceof LeafNode){
+            huffmanCodes.put(((LeafNode) n).getCharacter(), code);
             return;
         }
-        genHuffmanCode(node.getLeft(), "0");
-        genHuffmanCode(node.getRight(), "1");
+        genHuffmanCode(n.getLeft(), code.concat("0"));
+        genHuffmanCode(n.getRight(), code.concat("1"));
     }
 
-    private String getEncodedText(){
-        String str = null;
-        for (char chr : text.toCharArray())
+    private String printCode(){
+        String str = "";
+        for (char chr : input.toCharArray())
             str += huffmanCodes.get(chr);
 
         return str;
-    }
-
-    public String decode(String text){
-        String str = null;
-        Node curr = root;
-        for(char chr : text.toCharArray()){
-            curr =  chr == '0' ? curr.getLeft() : curr.getRight();
-            if (curr instanceof LeafNode){
-                str += (((LeafNode) curr).getElement());
-                curr = root;
-            }
-        }
-        return str;
-    }
-
-    public Map<Character, String> getHuffmanCodes(){
-        return huffmanCodes;
-    }
-
-    private void printCode(){
-        huffmanCodes.forEach((chr, code) ->
-                System.out.println(chr + " " + code));
-    }
-
-    public static void main(String[] args) {
-        HuffmanCodeTree obj = new HuffmanCodeTree();
-        obj.getBaseText("aaabbbbcccddd");
-
-        System.out.println(obj.encode());
-
-        obj.printCode();
-
-        System.out.println(obj.decode(obj.encode()));
-
     }
 
 }

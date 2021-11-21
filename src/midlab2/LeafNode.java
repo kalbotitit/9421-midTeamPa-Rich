@@ -1,29 +1,18 @@
 package midlab2;
 
-public class LeafNode extends Node {
+public class LeafNode extends InternalNode{
 
     private int freq;
-    private char element;
+    private char character;
 
-    public LeafNode(){
-    }
+    public LeafNode(){}
 
-    public LeafNode(int f, char e){
+    public LeafNode(char c, int f){
         freq = f;
-        element = e;
+        character = c;
     }
 
-
-    public int getFreq(){
-        return freq;
+    public char getCharacter() {
+        return character;
     }
-
-    public char getElement(){
-        return element;
-    }
-    
-    public boolean isLeaf(){
-        return true;
-    }
-
 }

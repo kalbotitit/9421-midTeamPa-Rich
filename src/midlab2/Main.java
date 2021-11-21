@@ -29,10 +29,11 @@ import java.util.Scanner;
 
 public class Main {
 
-    private static HuffmanCodeTree text;
+    private static HuffmanCodeTree text = new HuffmanCodeTree();
     private static String str = null;
 
     public static void main(String[] args) {
+
         run();
     }
 
@@ -45,13 +46,11 @@ public class Main {
             switch (choice) {
                 case 1 -> {
                     str = input("Please enter series of characters or paragraph as basis for creating Huffman Code");
-//                    text.getBaseText(str);
-//                    System.out.println(text.encode());
-//                    printCode();
+                    text.getBaseText(str);
                 }
                 case 2 -> {
                     str = input("Make sure that the text you enter is in the base text you enter.");
-
+                    System.out.println(text.cnvrtTextToHuffmanCode(str));
                 }
                 case 3 -> {
                     str = input("Make sure that the code you enter is in the converted code generated");
@@ -102,9 +101,9 @@ public class Main {
         }while (true);
     }
 
-    static void printCode(){
-        text.getHuffmanCodes().forEach((chr, code) ->
-                System.out.println(chr + " " + code));
-    }
+//    static void printCode(){
+//        text.getHuffmanCodes().forEach((chr, code) ->
+//                System.out.println(chr + " " + code));
+//    }
 
 }
